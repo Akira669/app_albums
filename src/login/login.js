@@ -1,10 +1,12 @@
 import React, {Component} from 'react';
 import firebase from '../config/firebase';
 
+import {connect} from 'react-redux';
+import {saveToken,clearToken} from '../config/actions';
+
 import Button from '@material-ui/core/Button';
 import Avatar from '@material-ui/core/Avatar';
-import {withStyles} from '@material-ui/core/styles';
-
+//import {withStyles} from '@material-ui/core/styles';
 import IconButton from '@material-ui/core/IconButton';
 import ExitToApp from '@material-ui/icons/ExitToApp';
 
@@ -59,15 +61,17 @@ class login extends Component{
 		 * Permite abrir un ´popup´ para iniciar session con gogole
 		 */
 		firebase.auth().signInWithPopup(provider).then(result =>{
-			console.log('result');
-			//let token = result.credential.accessToken;
+			let token = result.credential.accessToken;
+			this.props.saveToken(token);
 		}).catch(error =>{
 			console.log(error);
 		});
 	}
 
 	logoutApp(){
-		firebase.auth().signOut().then(console.log);
+		firebase.auth().signOut().then(() => {
+			this.props.clearToken();
+		});
 	}
 
 	loginButton(){
@@ -86,16 +90,30 @@ class login extends Component{
 
 	render(){
 		return (
-			<div className={this.props.classes.container}>
+			<div>
 				{this.loginButton()}
 			</div>
 		);
 	}
 }
 
+const mapStateToProps = (state) =>{
+	return {
+		token: state.token
+	}
+}
+
+const mapDispatchToProps =  {
+	saveToken,
+	clearToken
+}
+
+export default connect(mapStateToProps,mapDispatchToProps)(login);
+
+/*
 export default withStyles({
 	container:{
 		display:'flex',
 		flexDirection:'row'
 	}
-})(login);
+})(login); */
