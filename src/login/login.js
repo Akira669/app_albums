@@ -4,16 +4,10 @@ import firebase from '../config/firebase';
 import {connect} from 'react-redux';
 import {saveToken,clearToken} from '../config/actions';
 
-import Button from '@material-ui/core/Button';
-import Avatar from '@material-ui/core/Avatar';
-//import {withStyles} from '@material-ui/core/styles';
-import IconButton from '@material-ui/core/IconButton';
-import ExitToApp from '@material-ui/icons/ExitToApp';
+import AuthElement from './authElements';
 
 class login extends Component{
-	/**
-	 *
-	 */
+
 	constructor(props){
 		super(props); //constructor del padre
 
@@ -23,17 +17,12 @@ class login extends Component{
 		this.login = this.login.bind(this);
 		this.logoutApp = this.logoutApp.bind(this);
 
-		this.state = {
-			userLoggedIn : false,
-			photoURL : ''
-		};
 	}
 
 	/**
 	 * life cicles => metodos de ejecucion de ciertos puntos de la ejecucion
 	 * componentDidMount => se ejecuta cuando todo el componenete se ha cargado
 	 * onAuthStageChange => deteccion user login firebase
-	 */
 	componentDidMount(){
 		firebase.auth().onAuthStateChanged((user)=>{
 			if(user){
@@ -48,6 +37,11 @@ class login extends Component{
 				});
 			}
 		});
+	}
+	*/
+
+	componentDidMount(){
+		console.log(this.props.token);
 	}
 
 	login(){
@@ -74,32 +68,22 @@ class login extends Component{
 		});
 	}
 
-	loginButton(){
-		if(this.state.userLoggedIn) return (
-			[
-			<Avatar src={this.state.photoURL} />,
-			<IconButton color='inherit' onClick={this.logoutApp}><ExitToApp /></IconButton>
-			]
-		);
-		return (
-			<Button variant="contained" onClick={this.login}>
-				Iniciar Sesión
-			</Button>
-		);
-	}
-
 	render(){
 		return (
-			<div>
-				{this.loginButton()}
-			</div>
+			<AuthElement
+			login={this.login}
+			logout={this.logoutApp}
+			token={this.props.token}
+			user={this.props.user}
+			/>
 		);
 	}
 }
 
 const mapStateToProps = (state) =>{
 	return {
-		token: state.token
+		token: state.token,
+		user: state.user
 	}
 }
 
@@ -109,11 +93,3 @@ const mapDispatchToProps =  {
 }
 
 export default connect(mapStateToProps,mapDispatchToProps)(login);
-
-/*
-export default withStyles({
-	container:{
-		display:'flex',
-		flexDirection:'row'
-	}
-})(login); */
